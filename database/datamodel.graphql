@@ -1,0 +1,52 @@
+type User {
+  id: ID! @unique
+  name: String!
+  email: String! @unique
+  about: String!
+  password: String!
+  friends: [Friendship!]!
+  interests: [String!]!
+  requests: [Request!]!
+  inbox: [Offer!]!
+}
+
+type Offer {
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  expiresAt: DateTime!
+  title: String!
+  text: String!
+  author: Seller!
+}
+
+type Request {
+  id: ID! @unique
+  to: Seller!
+  author: User!
+  wants: [String!]!
+  title: String!
+  text: String!
+  isPublished: Boolean! @default(value: "true")
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Seller {
+  identity: User! @unique   @relation(name: "SellerIdentityRelation")
+  id: ID! @unique
+  name: String!
+  about: String!
+  patrons: [User!]! @relation(name: "SellerPatronsRelation")
+  sells: [String!]!
+  inbox: [Request!]!
+}
+
+type Friendship {
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  friendsBecause: [String!]!
+  offerAllowance: Int! @default(value: 0)
+  friend: Seller!
+}
