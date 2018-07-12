@@ -1,5 +1,5 @@
-# source: https://us1.prisma.sh/brian-cilenti-1f9206/itm-alpha/dev
-# timestamp: Wed Jul 11 2018 15:45:02 GMT-0700 (Pacific Daylight Time)
+# source: https://us1.prisma.sh/brian-cilenti-1f9206/itm-two/dev
+# timestamp: Thu Jul 12 2018 13:27:33 GMT-0700 (Pacific Daylight Time)
 
 type AggregateFriendship {
   count: Int!
@@ -297,35 +297,35 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
+  createOffer(data: OfferCreateInput!): Offer!
   createRequest(data: RequestCreateInput!): Request!
   createFriendship(data: FriendshipCreateInput!): Friendship!
   createSeller(data: SellerCreateInput!): Seller!
-  createOffer(data: OfferCreateInput!): Offer!
   createUser(data: UserCreateInput!): User!
+  updateOffer(data: OfferUpdateInput!, where: OfferWhereUniqueInput!): Offer
   updateRequest(data: RequestUpdateInput!, where: RequestWhereUniqueInput!): Request
   updateFriendship(data: FriendshipUpdateInput!, where: FriendshipWhereUniqueInput!): Friendship
   updateSeller(data: SellerUpdateInput!, where: SellerWhereUniqueInput!): Seller
-  updateOffer(data: OfferUpdateInput!, where: OfferWhereUniqueInput!): Offer
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  deleteOffer(where: OfferWhereUniqueInput!): Offer
   deleteRequest(where: RequestWhereUniqueInput!): Request
   deleteFriendship(where: FriendshipWhereUniqueInput!): Friendship
   deleteSeller(where: SellerWhereUniqueInput!): Seller
-  deleteOffer(where: OfferWhereUniqueInput!): Offer
   deleteUser(where: UserWhereUniqueInput!): User
+  upsertOffer(where: OfferWhereUniqueInput!, create: OfferCreateInput!, update: OfferUpdateInput!): Offer!
   upsertRequest(where: RequestWhereUniqueInput!, create: RequestCreateInput!, update: RequestUpdateInput!): Request!
   upsertFriendship(where: FriendshipWhereUniqueInput!, create: FriendshipCreateInput!, update: FriendshipUpdateInput!): Friendship!
   upsertSeller(where: SellerWhereUniqueInput!, create: SellerCreateInput!, update: SellerUpdateInput!): Seller!
-  upsertOffer(where: OfferWhereUniqueInput!, create: OfferCreateInput!, update: OfferUpdateInput!): Offer!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  updateManyOffers(data: OfferUpdateInput!, where: OfferWhereInput): BatchPayload!
   updateManyRequests(data: RequestUpdateInput!, where: RequestWhereInput): BatchPayload!
   updateManyFriendships(data: FriendshipUpdateInput!, where: FriendshipWhereInput): BatchPayload!
   updateManySellers(data: SellerUpdateInput!, where: SellerWhereInput): BatchPayload!
-  updateManyOffers(data: OfferUpdateInput!, where: OfferWhereInput): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  deleteManyOffers(where: OfferWhereInput): BatchPayload!
   deleteManyRequests(where: RequestWhereInput): BatchPayload!
   deleteManyFriendships(where: FriendshipWhereInput): BatchPayload!
   deleteManySellers(where: SellerWhereInput): BatchPayload!
-  deleteManyOffers(where: OfferWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
 }
 
@@ -342,13 +342,14 @@ interface Node {
 }
 
 type Offer implements Node {
+  author(where: SellerWhereInput): Seller!
+  recipient(where: UserWhereInput): User!
+  title: String!
+  text: String!
+  expiresAt: DateTime!
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
-  expiresAt: DateTime!
-  title: String!
-  text: String!
-  author(where: SellerWhereInput): Seller!
 }
 
 """A connection to a list of items."""
@@ -362,15 +363,23 @@ type OfferConnection {
 }
 
 input OfferCreateInput {
-  expiresAt: DateTime!
   title: String!
   text: String!
+  expiresAt: DateTime!
   author: SellerCreateOneInput!
+  recipient: UserCreateOneWithoutInboxInput!
 }
 
-input OfferCreateManyInput {
-  create: [OfferCreateInput!]
+input OfferCreateManyWithoutRecipientInput {
+  create: [OfferCreateWithoutRecipientInput!]
   connect: [OfferWhereUniqueInput!]
+}
+
+input OfferCreateWithoutRecipientInput {
+  title: String!
+  text: String!
+  expiresAt: DateTime!
+  author: SellerCreateOneInput!
 }
 
 """An edge in a connection."""
@@ -383,27 +392,27 @@ type OfferEdge {
 }
 
 enum OfferOrderByInput {
+  title_ASC
+  title_DESC
+  text_ASC
+  text_DESC
+  expiresAt_ASC
+  expiresAt_DESC
   id_ASC
   id_DESC
   createdAt_ASC
   createdAt_DESC
   updatedAt_ASC
   updatedAt_DESC
-  expiresAt_ASC
-  expiresAt_DESC
-  title_ASC
-  title_DESC
-  text_ASC
-  text_DESC
 }
 
 type OfferPreviousValues {
+  title: String!
+  text: String!
+  expiresAt: DateTime!
   id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
-  expiresAt: DateTime!
-  title: String!
-  text: String!
 }
 
 type OfferSubscriptionPayload {
@@ -445,38 +454,39 @@ input OfferSubscriptionWhereInput {
   node: OfferWhereInput
 }
 
-input OfferUpdateDataInput {
-  expiresAt: DateTime
-  title: String
-  text: String
-  author: SellerUpdateOneInput
-}
-
 input OfferUpdateInput {
-  expiresAt: DateTime
   title: String
   text: String
+  expiresAt: DateTime
   author: SellerUpdateOneInput
+  recipient: UserUpdateOneWithoutInboxInput
 }
 
-input OfferUpdateManyInput {
-  create: [OfferCreateInput!]
+input OfferUpdateManyWithoutRecipientInput {
+  create: [OfferCreateWithoutRecipientInput!]
   connect: [OfferWhereUniqueInput!]
   disconnect: [OfferWhereUniqueInput!]
   delete: [OfferWhereUniqueInput!]
-  update: [OfferUpdateWithWhereUniqueNestedInput!]
-  upsert: [OfferUpsertWithWhereUniqueNestedInput!]
+  update: [OfferUpdateWithWhereUniqueWithoutRecipientInput!]
+  upsert: [OfferUpsertWithWhereUniqueWithoutRecipientInput!]
 }
 
-input OfferUpdateWithWhereUniqueNestedInput {
-  where: OfferWhereUniqueInput!
-  data: OfferUpdateDataInput!
+input OfferUpdateWithoutRecipientDataInput {
+  title: String
+  text: String
+  expiresAt: DateTime
+  author: SellerUpdateOneInput
 }
 
-input OfferUpsertWithWhereUniqueNestedInput {
+input OfferUpdateWithWhereUniqueWithoutRecipientInput {
   where: OfferWhereUniqueInput!
-  update: OfferUpdateDataInput!
-  create: OfferCreateInput!
+  data: OfferUpdateWithoutRecipientDataInput!
+}
+
+input OfferUpsertWithWhereUniqueWithoutRecipientInput {
+  where: OfferWhereUniqueInput!
+  update: OfferUpdateWithoutRecipientDataInput!
+  create: OfferCreateWithoutRecipientInput!
 }
 
 input OfferWhereInput {
@@ -488,6 +498,108 @@ input OfferWhereInput {
 
   """Logical NOT on all given filters combined by AND."""
   NOT: [OfferWhereInput!]
+  title: String
+
+  """All values that are not equal to given value."""
+  title_not: String
+
+  """All values that are contained in given list."""
+  title_in: [String!]
+
+  """All values that are not contained in given list."""
+  title_not_in: [String!]
+
+  """All values less than the given value."""
+  title_lt: String
+
+  """All values less than or equal the given value."""
+  title_lte: String
+
+  """All values greater than the given value."""
+  title_gt: String
+
+  """All values greater than or equal the given value."""
+  title_gte: String
+
+  """All values containing the given string."""
+  title_contains: String
+
+  """All values not containing the given string."""
+  title_not_contains: String
+
+  """All values starting with the given string."""
+  title_starts_with: String
+
+  """All values not starting with the given string."""
+  title_not_starts_with: String
+
+  """All values ending with the given string."""
+  title_ends_with: String
+
+  """All values not ending with the given string."""
+  title_not_ends_with: String
+  text: String
+
+  """All values that are not equal to given value."""
+  text_not: String
+
+  """All values that are contained in given list."""
+  text_in: [String!]
+
+  """All values that are not contained in given list."""
+  text_not_in: [String!]
+
+  """All values less than the given value."""
+  text_lt: String
+
+  """All values less than or equal the given value."""
+  text_lte: String
+
+  """All values greater than the given value."""
+  text_gt: String
+
+  """All values greater than or equal the given value."""
+  text_gte: String
+
+  """All values containing the given string."""
+  text_contains: String
+
+  """All values not containing the given string."""
+  text_not_contains: String
+
+  """All values starting with the given string."""
+  text_starts_with: String
+
+  """All values not starting with the given string."""
+  text_not_starts_with: String
+
+  """All values ending with the given string."""
+  text_ends_with: String
+
+  """All values not ending with the given string."""
+  text_not_ends_with: String
+  expiresAt: DateTime
+
+  """All values that are not equal to given value."""
+  expiresAt_not: DateTime
+
+  """All values that are contained in given list."""
+  expiresAt_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  expiresAt_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  expiresAt_lt: DateTime
+
+  """All values less than or equal the given value."""
+  expiresAt_lte: DateTime
+
+  """All values greater than the given value."""
+  expiresAt_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  expiresAt_gte: DateTime
   id: ID
 
   """All values that are not equal to given value."""
@@ -572,112 +684,8 @@ input OfferWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
-  expiresAt: DateTime
-
-  """All values that are not equal to given value."""
-  expiresAt_not: DateTime
-
-  """All values that are contained in given list."""
-  expiresAt_in: [DateTime!]
-
-  """All values that are not contained in given list."""
-  expiresAt_not_in: [DateTime!]
-
-  """All values less than the given value."""
-  expiresAt_lt: DateTime
-
-  """All values less than or equal the given value."""
-  expiresAt_lte: DateTime
-
-  """All values greater than the given value."""
-  expiresAt_gt: DateTime
-
-  """All values greater than or equal the given value."""
-  expiresAt_gte: DateTime
-  title: String
-
-  """All values that are not equal to given value."""
-  title_not: String
-
-  """All values that are contained in given list."""
-  title_in: [String!]
-
-  """All values that are not contained in given list."""
-  title_not_in: [String!]
-
-  """All values less than the given value."""
-  title_lt: String
-
-  """All values less than or equal the given value."""
-  title_lte: String
-
-  """All values greater than the given value."""
-  title_gt: String
-
-  """All values greater than or equal the given value."""
-  title_gte: String
-
-  """All values containing the given string."""
-  title_contains: String
-
-  """All values not containing the given string."""
-  title_not_contains: String
-
-  """All values starting with the given string."""
-  title_starts_with: String
-
-  """All values not starting with the given string."""
-  title_not_starts_with: String
-
-  """All values ending with the given string."""
-  title_ends_with: String
-
-  """All values not ending with the given string."""
-  title_not_ends_with: String
-  text: String
-
-  """All values that are not equal to given value."""
-  text_not: String
-
-  """All values that are contained in given list."""
-  text_in: [String!]
-
-  """All values that are not contained in given list."""
-  text_not_in: [String!]
-
-  """All values less than the given value."""
-  text_lt: String
-
-  """All values less than or equal the given value."""
-  text_lte: String
-
-  """All values greater than the given value."""
-  text_gt: String
-
-  """All values greater than or equal the given value."""
-  text_gte: String
-
-  """All values containing the given string."""
-  text_contains: String
-
-  """All values not containing the given string."""
-  text_not_contains: String
-
-  """All values starting with the given string."""
-  text_starts_with: String
-
-  """All values not starting with the given string."""
-  text_not_starts_with: String
-
-  """All values ending with the given string."""
-  text_ends_with: String
-
-  """All values not ending with the given string."""
-  text_not_ends_with: String
   author: SellerWhereInput
-  _MagicalBackRelation_OfferToUser_every: UserWhereInput
-  _MagicalBackRelation_OfferToUser_some: UserWhereInput
-  _MagicalBackRelation_OfferToUser_none: UserWhereInput
+  recipient: UserWhereInput
 }
 
 input OfferWhereUniqueInput {
@@ -700,20 +708,20 @@ type PageInfo {
 }
 
 type Query {
+  offers(where: OfferWhereInput, orderBy: OfferOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Offer]!
   requests(where: RequestWhereInput, orderBy: RequestOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Request]!
   friendships(where: FriendshipWhereInput, orderBy: FriendshipOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Friendship]!
   sellers(where: SellerWhereInput, orderBy: SellerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Seller]!
-  offers(where: OfferWhereInput, orderBy: OfferOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Offer]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  offer(where: OfferWhereUniqueInput!): Offer
   request(where: RequestWhereUniqueInput!): Request
   friendship(where: FriendshipWhereUniqueInput!): Friendship
   seller(where: SellerWhereUniqueInput!): Seller
-  offer(where: OfferWhereUniqueInput!): Offer
   user(where: UserWhereUniqueInput!): User
+  offersConnection(where: OfferWhereInput, orderBy: OfferOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): OfferConnection!
   requestsConnection(where: RequestWhereInput, orderBy: RequestOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RequestConnection!
   friendshipsConnection(where: FriendshipWhereInput, orderBy: FriendshipOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FriendshipConnection!
   sellersConnection(where: SellerWhereInput, orderBy: SellerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SellerConnection!
-  offersConnection(where: OfferWhereInput, orderBy: OfferOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): OfferConnection!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
 
   """Fetches an object given its ID"""
@@ -725,7 +733,7 @@ type Query {
 
 type Request implements Node {
   id: ID!
-  to(where: SellerWhereInput): Seller!
+  recipient(where: SellerWhereInput): Seller!
   author(where: UserWhereInput): User!
   wants: [String!]!
   title: String!
@@ -750,7 +758,7 @@ input RequestCreateInput {
   text: String!
   isPublished: Boolean
   wants: RequestCreatewantsInput
-  to: SellerCreateOneWithoutInboxInput!
+  recipient: SellerCreateOneWithoutInboxInput!
   author: UserCreateOneWithoutRequestsInput!
 }
 
@@ -759,8 +767,8 @@ input RequestCreateManyWithoutAuthorInput {
   connect: [RequestWhereUniqueInput!]
 }
 
-input RequestCreateManyWithoutToInput {
-  create: [RequestCreateWithoutToInput!]
+input RequestCreateManyWithoutRecipientInput {
+  create: [RequestCreateWithoutRecipientInput!]
   connect: [RequestWhereUniqueInput!]
 }
 
@@ -773,10 +781,10 @@ input RequestCreateWithoutAuthorInput {
   text: String!
   isPublished: Boolean
   wants: RequestCreatewantsInput
-  to: SellerCreateOneWithoutInboxInput!
+  recipient: SellerCreateOneWithoutInboxInput!
 }
 
-input RequestCreateWithoutToInput {
+input RequestCreateWithoutRecipientInput {
   title: String!
   text: String!
   isPublished: Boolean
@@ -862,7 +870,7 @@ input RequestUpdateInput {
   text: String
   isPublished: Boolean
   wants: RequestUpdatewantsInput
-  to: SellerUpdateOneWithoutInboxInput
+  recipient: SellerUpdateOneWithoutInboxInput
   author: UserUpdateOneWithoutRequestsInput
 }
 
@@ -875,13 +883,13 @@ input RequestUpdateManyWithoutAuthorInput {
   upsert: [RequestUpsertWithWhereUniqueWithoutAuthorInput!]
 }
 
-input RequestUpdateManyWithoutToInput {
-  create: [RequestCreateWithoutToInput!]
+input RequestUpdateManyWithoutRecipientInput {
+  create: [RequestCreateWithoutRecipientInput!]
   connect: [RequestWhereUniqueInput!]
   disconnect: [RequestWhereUniqueInput!]
   delete: [RequestWhereUniqueInput!]
-  update: [RequestUpdateWithWhereUniqueWithoutToInput!]
-  upsert: [RequestUpsertWithWhereUniqueWithoutToInput!]
+  update: [RequestUpdateWithWhereUniqueWithoutRecipientInput!]
+  upsert: [RequestUpsertWithWhereUniqueWithoutRecipientInput!]
 }
 
 input RequestUpdatewantsInput {
@@ -893,10 +901,10 @@ input RequestUpdateWithoutAuthorDataInput {
   text: String
   isPublished: Boolean
   wants: RequestUpdatewantsInput
-  to: SellerUpdateOneWithoutInboxInput
+  recipient: SellerUpdateOneWithoutInboxInput
 }
 
-input RequestUpdateWithoutToDataInput {
+input RequestUpdateWithoutRecipientDataInput {
   title: String
   text: String
   isPublished: Boolean
@@ -909,9 +917,9 @@ input RequestUpdateWithWhereUniqueWithoutAuthorInput {
   data: RequestUpdateWithoutAuthorDataInput!
 }
 
-input RequestUpdateWithWhereUniqueWithoutToInput {
+input RequestUpdateWithWhereUniqueWithoutRecipientInput {
   where: RequestWhereUniqueInput!
-  data: RequestUpdateWithoutToDataInput!
+  data: RequestUpdateWithoutRecipientDataInput!
 }
 
 input RequestUpsertWithWhereUniqueWithoutAuthorInput {
@@ -920,10 +928,10 @@ input RequestUpsertWithWhereUniqueWithoutAuthorInput {
   create: RequestCreateWithoutAuthorInput!
 }
 
-input RequestUpsertWithWhereUniqueWithoutToInput {
+input RequestUpsertWithWhereUniqueWithoutRecipientInput {
   where: RequestWhereUniqueInput!
-  update: RequestUpdateWithoutToDataInput!
-  create: RequestCreateWithoutToInput!
+  update: RequestUpdateWithoutRecipientDataInput!
+  create: RequestCreateWithoutRecipientInput!
 }
 
 input RequestWhereInput {
@@ -1103,7 +1111,7 @@ input RequestWhereInput {
 
   """All values greater than or equal the given value."""
   updatedAt_gte: DateTime
-  to: SellerWhereInput
+  recipient: SellerWhereInput
   author: UserWhereInput
 }
 
@@ -1137,7 +1145,7 @@ input SellerCreateInput {
   sells: SellerCreatesellsInput
   identity: UserCreateOneInput!
   patrons: UserCreateManyInput
-  inbox: RequestCreateManyWithoutToInput
+  inbox: RequestCreateManyWithoutRecipientInput
 }
 
 input SellerCreateOneInput {
@@ -1236,7 +1244,7 @@ input SellerUpdateDataInput {
   sells: SellerUpdatesellsInput
   identity: UserUpdateOneInput
   patrons: UserUpdateManyInput
-  inbox: RequestUpdateManyWithoutToInput
+  inbox: RequestUpdateManyWithoutRecipientInput
 }
 
 input SellerUpdateInput {
@@ -1245,7 +1253,7 @@ input SellerUpdateInput {
   sells: SellerUpdatesellsInput
   identity: UserUpdateOneInput
   patrons: UserUpdateManyInput
-  inbox: RequestUpdateManyWithoutToInput
+  inbox: RequestUpdateManyWithoutRecipientInput
 }
 
 input SellerUpdateOneInput {
@@ -1435,10 +1443,10 @@ input SellerWhereUniqueInput {
 }
 
 type Subscription {
+  offer(where: OfferSubscriptionWhereInput): OfferSubscriptionPayload
   request(where: RequestSubscriptionWhereInput): RequestSubscriptionPayload
   friendship(where: FriendshipSubscriptionWhereInput): FriendshipSubscriptionPayload
   seller(where: SellerSubscriptionWhereInput): SellerSubscriptionPayload
-  offer(where: OfferSubscriptionWhereInput): OfferSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
@@ -1472,7 +1480,7 @@ input UserCreateInput {
   interests: UserCreateinterestsInput
   friends: FriendshipCreateManyInput
   requests: RequestCreateManyWithoutAuthorInput
-  inbox: OfferCreateManyInput
+  inbox: OfferCreateManyWithoutRecipientInput
 }
 
 input UserCreateinterestsInput {
@@ -1489,9 +1497,24 @@ input UserCreateOneInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateOneWithoutInboxInput {
+  create: UserCreateWithoutInboxInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreateOneWithoutRequestsInput {
   create: UserCreateWithoutRequestsInput
   connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutInboxInput {
+  name: String!
+  email: String!
+  about: String!
+  password: String!
+  interests: UserCreateinterestsInput
+  friends: FriendshipCreateManyInput
+  requests: RequestCreateManyWithoutAuthorInput
 }
 
 input UserCreateWithoutRequestsInput {
@@ -1501,7 +1524,7 @@ input UserCreateWithoutRequestsInput {
   password: String!
   interests: UserCreateinterestsInput
   friends: FriendshipCreateManyInput
-  inbox: OfferCreateManyInput
+  inbox: OfferCreateManyWithoutRecipientInput
 }
 
 """An edge in a connection."""
@@ -1586,7 +1609,7 @@ input UserUpdateDataInput {
   interests: UserUpdateinterestsInput
   friends: FriendshipUpdateManyInput
   requests: RequestUpdateManyWithoutAuthorInput
-  inbox: OfferUpdateManyInput
+  inbox: OfferUpdateManyWithoutRecipientInput
 }
 
 input UserUpdateInput {
@@ -1597,7 +1620,7 @@ input UserUpdateInput {
   interests: UserUpdateinterestsInput
   friends: FriendshipUpdateManyInput
   requests: RequestUpdateManyWithoutAuthorInput
-  inbox: OfferUpdateManyInput
+  inbox: OfferUpdateManyWithoutRecipientInput
 }
 
 input UserUpdateinterestsInput {
@@ -1621,12 +1644,30 @@ input UserUpdateOneInput {
   upsert: UserUpsertNestedInput
 }
 
+input UserUpdateOneWithoutInboxInput {
+  create: UserCreateWithoutInboxInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateWithoutInboxDataInput
+  upsert: UserUpsertWithoutInboxInput
+}
+
 input UserUpdateOneWithoutRequestsInput {
   create: UserCreateWithoutRequestsInput
   connect: UserWhereUniqueInput
   delete: Boolean
   update: UserUpdateWithoutRequestsDataInput
   upsert: UserUpsertWithoutRequestsInput
+}
+
+input UserUpdateWithoutInboxDataInput {
+  name: String
+  email: String
+  about: String
+  password: String
+  interests: UserUpdateinterestsInput
+  friends: FriendshipUpdateManyInput
+  requests: RequestUpdateManyWithoutAuthorInput
 }
 
 input UserUpdateWithoutRequestsDataInput {
@@ -1636,7 +1677,7 @@ input UserUpdateWithoutRequestsDataInput {
   password: String
   interests: UserUpdateinterestsInput
   friends: FriendshipUpdateManyInput
-  inbox: OfferUpdateManyInput
+  inbox: OfferUpdateManyWithoutRecipientInput
 }
 
 input UserUpdateWithWhereUniqueNestedInput {
@@ -1647,6 +1688,11 @@ input UserUpdateWithWhereUniqueNestedInput {
 input UserUpsertNestedInput {
   update: UserUpdateDataInput!
   create: UserCreateInput!
+}
+
+input UserUpsertWithoutInboxInput {
+  update: UserUpdateWithoutInboxDataInput!
+  create: UserCreateWithoutInboxInput!
 }
 
 input UserUpsertWithoutRequestsInput {

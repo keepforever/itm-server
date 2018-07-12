@@ -1,4 +1,4 @@
-# import User, Request, Offer from "./generated/prisma.graphql"
+# import User, Request, Offer, UserCreateinterestsInput from "./generated/prisma.graphql"
 # import Request, Seller, Friendship from "./generated/prisma.graphql"
 
 # import Query.sellers from "./generated/prisma.graphql"
@@ -38,7 +38,13 @@ type RefreshTokenPayload {
 
 type Mutation {
   refreshToken: RefreshTokenPayload!
-  signup(about: String!, email: String!, password: String!, name: String!): AuthPayload!
+  signup(
+    name: String!,
+    email: String!, 
+    password: String!,
+    about: String!, 
+    interests: UserCreateinterestsInput
+    ): AuthPayload!
   login(email: String!, password: String!): LoginResponse!
 }
 
