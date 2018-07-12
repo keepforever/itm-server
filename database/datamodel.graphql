@@ -10,14 +10,17 @@ type User {
   inbox: [Offer!]!
 }
 
+# adding recipient to Offer might break shit.. must test
+
 type Offer {
+  author: Seller!
+  recipient: User!
+  title: String!
+  text: String!
+  expiresAt: DateTime!
   id: ID! @unique
   createdAt: DateTime!
   updatedAt: DateTime!
-  expiresAt: DateTime!
-  title: String!
-  text: String!
-  author: Seller!
 }
 
 type Request {
