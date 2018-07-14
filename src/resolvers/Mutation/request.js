@@ -16,8 +16,8 @@ const request = {
         wants: { set },  
         title, 
         text, 
-        author: { connect: { id: patronId } },
-        recipient: { connect: {  id: sellerId } }  
+        author: { connect: { id: patronId } }, //rename author id to patronId
+        recipient: { connect: {  id: sellerId } }  //rename recipient id to sellerId
     } 
     } = args
 

@@ -6,7 +6,7 @@ const Query = {
   sellers: (parent, args, ctx, info) => {
     //getUserId makes sure sender of requset has a valid token
     //in the HTTP Headers thereby protecting the route
-    getUserId(ctx)
+    //getUserId(ctx)
     return forwardTo("db")(parent, args, ctx, info);
   },
   me(parent, args, ctx, info) {

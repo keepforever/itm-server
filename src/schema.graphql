@@ -1,6 +1,8 @@
 # import User, Request, Offer, UserCreateinterestsInput from "./generated/prisma.graphql"
 # import Request, Seller, Friendship from "./generated/prisma.graphql"
 
+
+
 # import Query.sellers from "./generated/prisma.graphql"
 # import Query.offers from "./generated/prisma.graphql"
 # import Query.users from "./generated/prisma.graphql"
@@ -47,6 +49,7 @@ type Mutation {
     ): AuthPayload!
   login(email: String!, password: String!): LoginResponse!
 }
+
 
 type AuthPayload {
   token: String!
